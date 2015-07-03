@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Contrib.Persistence", "NEventStore.Contrib.Persistence\NEventStore.Contrib.Persistence.csproj", "{F9E7FD69-0818-48CA-9249-5387739E1B6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.FirebirdSql.Tests", "NEventStore.Persistence.FirebirdSql.Tests\NEventStore.Persistence.FirebirdSql.Tests.csproj", "{0429FD21-A8EF-4C73-967B-579A9C50CE2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore", "..\dependencies\NEventStore\src\NEventStore\NEventStore.csproj", "{03946843-F343-419C-88EF-3E446D08DFA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.AcceptanceTests", "..\dependencies\NEventStore\src\NEventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.csproj", "{3FE594FE-16FF-4405-97D5-5A58FB12520B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F9E7FD69-0818-48CA-9249-5387739E1B6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9E7FD69-0818-48CA-9249-5387739E1B6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9E7FD69-0818-48CA-9249-5387739E1B6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9E7FD69-0818-48CA-9249-5387739E1B6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0429FD21-A8EF-4C73-967B-579A9C50CE2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0429FD21-A8EF-4C73-967B-579A9C50CE2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0429FD21-A8EF-4C73-967B-579A9C50CE2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0429FD21-A8EF-4C73-967B-579A9C50CE2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03946843-F343-419C-88EF-3E446D08DFA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03946843-F343-419C-88EF-3E446D08DFA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03946843-F343-419C-88EF-3E446D08DFA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03946843-F343-419C-88EF-3E446D08DFA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FE594FE-16FF-4405-97D5-5A58FB12520B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FE594FE-16FF-4405-97D5-5A58FB12520B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FE594FE-16FF-4405-97D5-5A58FB12520B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FE594FE-16FF-4405-97D5-5A58FB12520B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>NEventStore.Persistence.Roche</id>
+    <version>6.0.1.0</version>
+    <title>NEventStore.Persistence</title>
+    <authors>J. Reimers</authors>
+    <owners>J. Reimers</owners>
+    <licenseUrl>http://license.server</licenseUrl>
+    <projectUrl>https://github.com/jjrdk/NEventStore.Persistence.SQL</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Custom build of NEventStore with persistence</description>
+    <releaseNotes>Included support for FirebirdSQL database.</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>EventStore EventSource FirebirdSQL</tags>
+  <dependencies>
+	<dependency id="NEventStore.Roche" version="6.0.1.0" />
+  </dependencies>
+  </metadata>
+  <files>
+	<file src="bin\$configuration$\NEventStore.Domain.dll" target="lib\net452\" />
+  </files>
+</package>
