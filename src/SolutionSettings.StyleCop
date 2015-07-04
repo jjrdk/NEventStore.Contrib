@@ -189,10 +189,9 @@
         </Rule>
       </Rules>
       <AnalyzerSettings>
-        <StringProperty Name="CompanyName">Reimers.dk</StringProperty>
-        <StringProperty Name="Copyright">Copyright © Reimers.dk 2014
-This source is subject to the Microsoft Public License (Ms-PL).
-Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+        <StringProperty Name="CompanyName">NEventStore.Contrib</StringProperty>
+        <StringProperty Name="Copyright">Copyright © NEventStore.Contrib 2015
+This source is subject to the MIT License.
 All other rights reserved.</StringProperty>
         <BooleanProperty Name="IgnorePrivates">True</BooleanProperty>
         <BooleanProperty Name="IgnoreInternals">True</BooleanProperty>
