@@ -1,14 +1,16 @@
-namespace NEventStore.Persistence.Sql
+namespace NEventStore.Contrib.Persistence
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Configuration;
-    using System.Data;
-    using System.Data.Common;
-    using System.Linq;
-    using NEventStore.Logging;
+	using System;
+	using System.Collections.Generic;
+	using System.Configuration;
+	using System.Data;
+	using System.Data.Common;
+	using System.Linq;
 
-    public class ConfigurationConnectionFactory : IConnectionFactory
+	using NEventStore.Logging;
+	using NEventStore.Persistence;
+
+	public class ConfigurationConnectionFactory : IConnectionFactory
     {
         private const string DefaultConnectionName = "NEventStore";
 
@@ -25,43 +27,43 @@ namespace NEventStore.Persistence.Sql
 
         public ConfigurationConnectionFactory(string connectionName)
         {
-            _connectionName = connectionName ?? DefaultConnectionName;
-            Logger.Debug(Messages.ConfiguringConnections, _connectionName);
+            this._connectionName = connectionName ?? DefaultConnectionName;
+            Logger.Debug(Messages.ConfiguringConnections, this._connectionName);
         }
 
         public ConfigurationConnectionFactory(string connectionName, string providerName, string connectionString)
             : this(connectionName)
         {
-            _connectionStringSettings = new ConnectionStringSettings(_connectionName, connectionString, providerName);
+            this._connectionStringSettings = new ConnectionStringSettings(this._connectionName, connectionString, providerName);
         }
 
         public virtual ConnectionStringSettings Settings
         {
-            get { return GetConnectionStringSettings(_connectionName); }
+            get { return this.GetConnectionStringSettings(this._connectionName); }
         }
 
         public virtual IDbConnection Open()
         {
-            Logger.Verbose(Messages.OpeningMasterConnection, _connectionName);
-            return Open(_connectionName);
+            Logger.Verbose(Messages.OpeningMasterConnection, this._connectionName);
+            return this.Open(this._connectionName);
         }
 
         public Type GetDbProviderFactoryType()
         {
-            DbProviderFactory factory = GetFactory(Settings);
+            DbProviderFactory factory = this.GetFactory(this.Settings);
             return factory.GetType();
         }
 
         protected virtual IDbConnection Open(string connectionName)
         {
-            ConnectionStringSettings setting = GetSetting(connectionName);
+            ConnectionStringSettings setting = this.GetSetting(connectionName);
             string connectionString = setting.ConnectionString;
-            return new ConnectionScope(connectionString, () => Open(connectionString, setting));
+            return new ConnectionScope(connectionString, () => this.Open(connectionString, setting));
         }
 
         protected virtual IDbConnection Open(string connectionString, ConnectionStringSettings setting)
         {
-            DbProviderFactory factory = GetFactory(setting);
+            DbProviderFactory factory = this.GetFactory(setting);
             DbConnection connection = factory.CreateConnection();
             if (connection == null)
             {
@@ -94,7 +96,7 @@ namespace NEventStore.Persistence.Sql
                     return setting;
                 }
 
-                setting = GetConnectionStringSettings(connectionName);
+                setting = this.GetConnectionStringSettings(connectionName);
                 return CachedSettings[connectionName] = setting;
             }
         }
@@ -118,7 +120,7 @@ namespace NEventStore.Persistence.Sql
         {
             Logger.Debug(Messages.DiscoveringConnectionSettings, connectionName);
 
-            ConnectionStringSettings settings = _connectionStringSettings ?? ConfigurationManager.ConnectionStrings
+            ConnectionStringSettings settings = this._connectionStringSettings ?? ConfigurationManager.ConnectionStrings
                                                                     .Cast<ConnectionStringSettings>()
                                                                     .FirstOrDefault(x => x.Name == connectionName);
 

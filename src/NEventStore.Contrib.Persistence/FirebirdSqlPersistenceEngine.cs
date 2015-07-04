@@ -1,19 +1,19 @@
-﻿namespace NEventStore.Persistence.Sql
+﻿namespace NEventStore.Contrib.Persistence
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Data;
-    using System.Globalization;
-    using System.Security.Cryptography;
-    using System.Text;
-    using System.Threading;
-    using System.Transactions;
+	using System;
+	using System.Collections.Generic;
+	using System.Data;
+	using System.Globalization;
+	using System.Linq;
+	using System.Text;
+	using System.Threading;
+	using System.Transactions;
 
-    using NEventStore.Logging;
-    using NEventStore.Serialization;
+	using NEventStore.Logging;
+	using NEventStore.Persistence;
+	using NEventStore.Serialization;
 
-    public class FirebirdSqlPersistenceEngine : IPersistStreams
+	public class FirebirdSqlPersistenceEngine : IPersistStreams
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof(FirebirdSqlPersistenceEngine));
         private static readonly DateTime EpochTime = new DateTime(1970, 1, 1);
@@ -59,57 +59,57 @@
                 throw new ArgumentNullException("streamIdHasher");
             }
 
-            _connectionFactory = connectionFactory;
-            _dialect = dialect;
-            _serializer = serializer;
-            _scopeOption = scopeOption;
-            _pageSize = pageSize;
-            _streamIdHasher = new StreamIdHasherValidator(streamIdHasher);
+            this._connectionFactory = connectionFactory;
+            this._dialect = dialect;
+            this._serializer = serializer;
+            this._scopeOption = scopeOption;
+            this._pageSize = pageSize;
+            this._streamIdHasher = new StreamIdHasherValidator(streamIdHasher);
 
-            Logger.Debug(Messages.UsingScope, _scopeOption.ToString());
+            Logger.Debug(Messages.UsingScope, this._scopeOption.ToString());
         }
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         public virtual void Initialize()
         {
-            if (Interlocked.Increment(ref _initialized) > 1)
+            if (Interlocked.Increment(ref this._initialized) > 1)
             {
                 return;
             }
 
             Logger.Debug(Messages.InitializingStorage);
 
-            string[] statements = _dialect.InitializeStorage.Split(new[] { "__" }, StringSplitOptions.RemoveEmptyEntries);
+            string[] statements = this._dialect.InitializeStorage.Split(new[] { "__" }, StringSplitOptions.RemoveEmptyEntries);
 
             StringBuilder builder = null;
             bool buildingSetTermStatement = false;
 
             foreach (string s in statements)
             {
-                ExecuteCommand(statement => statement.ExecuteWithoutExceptions(s.Trim()));
+                this.ExecuteCommand(statement => statement.ExecuteWithoutExceptions(s.Trim()));
             }
         }
 
         public virtual IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             Logger.Debug(Messages.GettingAllCommitsBetween, streamId, minRevision, maxRevision);
-            streamId = _streamIdHasher.GetHash(streamId);
-            return ExecuteQuery(query =>
+            streamId = this._streamIdHasher.GetHash(streamId);
+            return this.ExecuteQuery(query =>
                 {
-                    string statement = _dialect.GetCommitsFromStartingRevision;
-                    query.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
-                    query.AddParameter(_dialect.StreamId, streamId, DbType.AnsiString);
-                    query.AddParameter(_dialect.StreamRevision, minRevision);
-                    query.AddParameter(_dialect.MaxStreamRevision, maxRevision);
-                    query.AddParameter(_dialect.CommitSequence, 0);
+                    string statement = this._dialect.GetCommitsFromStartingRevision;
+                    query.AddParameter(this._dialect.BucketId, bucketId, DbType.AnsiString);
+                    query.AddParameter(this._dialect.StreamId, streamId, DbType.AnsiString);
+                    query.AddParameter(this._dialect.StreamRevision, minRevision);
+                    query.AddParameter(this._dialect.MaxStreamRevision, maxRevision);
+                    query.AddParameter(this._dialect.CommitSequence, 0);
                     return query
-                        .ExecutePagedQuery(statement, _dialect.NextPageDelegate)
-                        .Select(x => x.GetCommit(_serializer, _dialect));
+                        .ExecutePagedQuery(statement, this._dialect.NextPageDelegate)
+                        .Select(x => x.GetCommit(this._serializer, this._dialect));
 
                     /* return query
                          .ExecutePagedQuery(statement, (q, r) => {})
@@ -123,13 +123,13 @@
             start = start < EpochTime ? EpochTime : start;
 
             Logger.Debug(Messages.GettingAllCommitsFrom, start, bucketId);
-            return ExecuteQuery(query =>
+            return this.ExecuteQuery(query =>
                 {
-                    string statement = _dialect.GetCommitsFromInstant;
-                    query.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
-                    query.AddParameter(_dialect.CommitStamp, start);
+                    string statement = this._dialect.GetCommitsFromInstant;
+                    query.AddParameter(this._dialect.BucketId, bucketId, DbType.AnsiString);
+                    query.AddParameter(this._dialect.CommitStamp, start);
                     return query.ExecutePagedQuery(statement, (q, r) => { })
-                            .Select(x => x.GetCommit(_serializer, _dialect));
+                            .Select(x => x.GetCommit(this._serializer, this._dialect));
 
                 });
         }
@@ -146,14 +146,14 @@
             end = end < EpochTime ? EpochTime : end;
 
             Logger.Debug(Messages.GettingAllCommitsFromTo, start, end);
-            return ExecuteQuery(query =>
+            return this.ExecuteQuery(query =>
                 {
-                    string statement = _dialect.GetCommitsFromToInstant;
-                    query.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
-                    query.AddParameter(_dialect.CommitStampStart, start);
-                    query.AddParameter(_dialect.CommitStampEnd, end);
+                    string statement = this._dialect.GetCommitsFromToInstant;
+                    query.AddParameter(this._dialect.BucketId, bucketId, DbType.AnsiString);
+                    query.AddParameter(this._dialect.CommitStampStart, start);
+                    query.AddParameter(this._dialect.CommitStampEnd, end);
                     return query.ExecutePagedQuery(statement, (q, r) => { })
-                        .Select(x => x.GetCommit(_serializer, _dialect));
+                        .Select(x => x.GetCommit(this._serializer, this._dialect));
                 });
         }
 
@@ -162,7 +162,7 @@
             ICommit commit;
             try
             {
-                commit = PersistCommit(attempt);
+                commit = this.PersistCommit(attempt);
                 Logger.Debug(Messages.CommitPersisted, attempt.CommitId);
             }
             catch (Exception e)
@@ -172,7 +172,7 @@
                     throw;
                 }
 
-                if (DetectDuplicate(attempt))
+                if (this.DetectDuplicate(attempt))
                 {
                     Logger.Info(Messages.DuplicateCommit);
                     throw new DuplicateCommitException(e.Message, e);
@@ -188,35 +188,35 @@
         {
             Logger.Debug(Messages.GettingUndispatchedCommits);
             return
-                ExecuteQuery(query => query.ExecutePagedQuery(_dialect.GetUndispatchedCommits, (q, r) => { }))
-                    .Select(x => x.GetCommit(_serializer, _dialect))
+                this.ExecuteQuery(query => query.ExecutePagedQuery(this._dialect.GetUndispatchedCommits, (q, r) => { }))
+                    .Select(x => x.GetCommit(this._serializer, this._dialect))
                     .ToArray(); // avoid paging
         }
 
         public virtual void MarkCommitAsDispatched(ICommit commit)
         {
             Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
-            string streamId = _streamIdHasher.GetHash(commit.StreamId);
-            ExecuteCommand(cmd =>
+            string streamId = this._streamIdHasher.GetHash(commit.StreamId);
+            this.ExecuteCommand(cmd =>
                 {
-                    cmd.AddParameter(_dialect.BucketId, commit.BucketId, DbType.AnsiString);
-                    cmd.AddParameter(_dialect.StreamId, streamId, DbType.AnsiString);
-                    cmd.AddParameter(_dialect.CommitSequence, commit.CommitSequence);
-                    return cmd.ExecuteWithoutExceptions(_dialect.MarkCommitAsDispatched);
+                    cmd.AddParameter(this._dialect.BucketId, commit.BucketId, DbType.AnsiString);
+                    cmd.AddParameter(this._dialect.StreamId, streamId, DbType.AnsiString);
+                    cmd.AddParameter(this._dialect.CommitSequence, commit.CommitSequence);
+                    return cmd.ExecuteWithoutExceptions(this._dialect.MarkCommitAsDispatched);
                 });
         }
 
         public virtual IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             Logger.Debug(Messages.GettingStreamsToSnapshot);
-            return ExecuteQuery(query =>
+            return this.ExecuteQuery(query =>
                 {
-                    string statement = _dialect.GetStreamsRequiringSnapshots;
-                    query.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
-                    query.AddParameter(_dialect.Threshold, maxThreshold);
+                    string statement = this._dialect.GetStreamsRequiringSnapshots;
+                    query.AddParameter(this._dialect.BucketId, bucketId, DbType.AnsiString);
+                    query.AddParameter(this._dialect.Threshold, maxThreshold);
                     return
                         query.ExecutePagedQuery(statement,
-                            (q, s) => q.SetParameter(_dialect.StreamId, _dialect.CoalesceParameterValue(s.StreamId()), DbType.AnsiString))
+                            (q, s) => q.SetParameter(this._dialect.StreamId, this._dialect.CoalesceParameterValue(s.StreamId()), DbType.AnsiString))
                             .Select(x => x.GetStreamToSnapshot());
                 });
         }
@@ -224,47 +224,47 @@
         public virtual ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
-            var streamIdHash = _streamIdHasher.GetHash(streamId);
-            return ExecuteQuery(query =>
+            var streamIdHash = this._streamIdHasher.GetHash(streamId);
+            return this.ExecuteQuery(query =>
                 {
-                    string statement = _dialect.GetSnapshot;
-                    query.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
-                    query.AddParameter(_dialect.StreamId, streamIdHash, DbType.AnsiString);
-                    query.AddParameter(_dialect.StreamRevision, maxRevision);
-                    return query.ExecuteWithQuery(statement).Select(x => x.GetSnapshot(_serializer, streamId));
+                    string statement = this._dialect.GetSnapshot;
+                    query.AddParameter(this._dialect.BucketId, bucketId, DbType.AnsiString);
+                    query.AddParameter(this._dialect.StreamId, streamIdHash, DbType.AnsiString);
+                    query.AddParameter(this._dialect.StreamRevision, maxRevision);
+                    return query.ExecuteWithQuery(statement).Select(x => x.GetSnapshot(this._serializer, streamId));
                 }).FirstOrDefault();
         }
 
         public virtual bool AddSnapshot(ISnapshot snapshot)
         {
             Logger.Debug(Messages.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
-            string streamId = _streamIdHasher.GetHash(snapshot.StreamId);
-            return ExecuteCommand((connection, cmd) =>
+            string streamId = this._streamIdHasher.GetHash(snapshot.StreamId);
+            return this.ExecuteCommand((connection, cmd) =>
                 {
-                    cmd.AddParameter(_dialect.BucketId, snapshot.BucketId, DbType.AnsiString);
-                    cmd.AddParameter(_dialect.StreamId, streamId, DbType.AnsiString);
-                    cmd.AddParameter(_dialect.StreamRevision, snapshot.StreamRevision);
-                    _dialect.AddPayloadParamater(_connectionFactory, connection, cmd, _serializer.Serialize(snapshot.Payload));
-                    return cmd.ExecuteWithoutExceptions(_dialect.AppendSnapshotToCommit);
+                    cmd.AddParameter(this._dialect.BucketId, snapshot.BucketId, DbType.AnsiString);
+                    cmd.AddParameter(this._dialect.StreamId, streamId, DbType.AnsiString);
+                    cmd.AddParameter(this._dialect.StreamRevision, snapshot.StreamRevision);
+                    this._dialect.AddPayloadParamater(this._connectionFactory, connection, cmd, this._serializer.Serialize(snapshot.Payload));
+                    return cmd.ExecuteWithoutExceptions(this._dialect.AppendSnapshotToCommit);
                 }) > 0;
         }
 
         public virtual void Purge()
         {
             Logger.Warn(Messages.PurgingStorage);
-            foreach (var s in _dialect.PurgeStorage.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var s in this._dialect.PurgeStorage.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                ExecuteCommand(cmd => cmd.ExecuteNonQuery(s.Trim()));
+                this.ExecuteCommand(cmd => cmd.ExecuteNonQuery(s.Trim()));
             }
         }
 
         public void Purge(string bucketId)
         {
             Logger.Warn(Messages.PurgingBucket, bucketId);
-            ExecuteCommand(cmd =>
+            this.ExecuteCommand(cmd =>
                 {
-                    cmd.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
-                    return cmd.ExecuteNonQuery(_dialect.PurgeBucket);
+                    cmd.AddParameter(this._dialect.BucketId, bucketId, DbType.AnsiString);
+                    return cmd.ExecuteNonQuery(this._dialect.PurgeBucket);
                 });
         }
 
@@ -272,23 +272,23 @@
         {
             Logger.Warn(Messages.DroppingTables);
 
-            string[] tablesNames = _dialect.Drop.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            string[] tablesNames = this._dialect.Drop.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string name in tablesNames)
             {
-                ExecuteCommand(cmd => cmd.ExecuteNonQuery(name.Trim() + ";"));
+                this.ExecuteCommand(cmd => cmd.ExecuteNonQuery(name.Trim() + ";"));
             }
         }
 
         public void DeleteStream(string bucketId, string streamId)
         {
             Logger.Warn(Messages.DeletingStream, streamId, bucketId);
-            streamId = _streamIdHasher.GetHash(streamId);
-            ExecuteCommand(cmd =>
+            streamId = this._streamIdHasher.GetHash(streamId);
+            this.ExecuteCommand(cmd =>
                 {
-                    cmd.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
-                    cmd.AddParameter(_dialect.StreamId, streamId, DbType.AnsiString);
-                    return cmd.ExecuteNonQuery(_dialect.DeleteStream);
+                    cmd.AddParameter(this._dialect.BucketId, bucketId, DbType.AnsiString);
+                    cmd.AddParameter(this._dialect.StreamId, streamId, DbType.AnsiString);
+                    return cmd.ExecuteNonQuery(this._dialect.DeleteStream);
                 });
         }
 
@@ -296,13 +296,13 @@
         {
             LongCheckpoint checkpoint = LongCheckpoint.Parse(checkpointToken);
             Logger.Debug(Messages.GettingAllCommitsFromBucketAndCheckpoint, bucketId, checkpointToken);
-            return ExecuteQuery(query =>
+            return this.ExecuteQuery(query =>
             {
-                string statement = _dialect.GetCommitsFromBucketAndCheckpoint;
-                query.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
-                query.AddParameter(_dialect.CheckpointNumber, checkpoint.LongValue);
+                string statement = this._dialect.GetCommitsFromBucketAndCheckpoint;
+                query.AddParameter(this._dialect.BucketId, bucketId, DbType.AnsiString);
+                query.AddParameter(this._dialect.CheckpointNumber, checkpoint.LongValue);
                 return query.ExecutePagedQuery(statement, (q, r) => { })
-                    .Select(x => x.GetCommit(_serializer, _dialect));
+                    .Select(x => x.GetCommit(this._serializer, this._dialect));
             });
         }
 
@@ -310,29 +310,29 @@
         {
             LongCheckpoint checkpoint = LongCheckpoint.Parse(checkpointToken);
             Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, checkpointToken);
-            return ExecuteQuery(query =>
+            return this.ExecuteQuery(query =>
             {
-                string statement = _dialect.GetCommitsFromCheckpoint;
-                query.AddParameter(_dialect.CheckpointNumber, checkpoint.LongValue);
+                string statement = this._dialect.GetCommitsFromCheckpoint;
+                query.AddParameter(this._dialect.CheckpointNumber, checkpoint.LongValue);
                 return query.ExecutePagedQuery(statement, (q, r) => { })
-                    .Select(x => x.GetCommit(_serializer, _dialect));
+                    .Select(x => x.GetCommit(this._serializer, this._dialect));
             });
         }
 
         public bool IsDisposed
         {
-            get { return _disposed; }
+            get { return this._disposed; }
         }
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposing || _disposed)
+            if (!disposing || this._disposed)
             {
                 return;
             }
 
             Logger.Debug(Messages.ShuttingDownPersistence);
-            _disposed = true;
+            this._disposed = true;
         }
 
         protected virtual void OnPersistCommit(IContribDbStatement cmd, CommitAttempt attempt)
@@ -341,21 +341,21 @@
         private ICommit PersistCommit(CommitAttempt attempt)
         {
             Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence, attempt.BucketId);
-            string streamId = _streamIdHasher.GetHash(attempt.StreamId);
-            return ExecuteCommand((connection, cmd) =>
+            string streamId = this._streamIdHasher.GetHash(attempt.StreamId);
+            return this.ExecuteCommand((connection, cmd) =>
             {
-                cmd.AddParameter(_dialect.BucketId, attempt.BucketId, DbType.AnsiString);
-                cmd.AddParameter(_dialect.StreamId, streamId, DbType.AnsiString);
-                cmd.AddParameter(_dialect.StreamIdOriginal, attempt.StreamId);
-                cmd.AddParameter(_dialect.StreamRevision, attempt.StreamRevision);
-                cmd.AddParameter(_dialect.Items, attempt.Events.Count);
-                cmd.AddParameter(_dialect.CommitId, attempt.CommitId);
-                cmd.AddParameter(_dialect.CommitSequence, attempt.CommitSequence);
-                cmd.AddParameter(_dialect.CommitStamp, attempt.CommitStamp);
-                cmd.AddParameter(_dialect.Headers, _serializer.Serialize(attempt.Headers));
-                _dialect.AddPayloadParamater(_connectionFactory, connection, cmd, _serializer.Serialize(attempt.Events.ToList()));
-                OnPersistCommit(cmd, attempt);
-                var checkpointNumber = cmd.ExecuteScalar(_dialect.PersistCommit).ToLong();
+                cmd.AddParameter(this._dialect.BucketId, attempt.BucketId, DbType.AnsiString);
+                cmd.AddParameter(this._dialect.StreamId, streamId, DbType.AnsiString);
+                cmd.AddParameter(this._dialect.StreamIdOriginal, attempt.StreamId);
+                cmd.AddParameter(this._dialect.StreamRevision, attempt.StreamRevision);
+                cmd.AddParameter(this._dialect.Items, attempt.Events.Count);
+                cmd.AddParameter(this._dialect.CommitId, attempt.CommitId);
+                cmd.AddParameter(this._dialect.CommitSequence, attempt.CommitSequence);
+                cmd.AddParameter(this._dialect.CommitStamp, attempt.CommitStamp);
+                cmd.AddParameter(this._dialect.Headers, this._serializer.Serialize(attempt.Headers));
+                this._dialect.AddPayloadParamater(this._connectionFactory, connection, cmd, this._serializer.Serialize(attempt.Events.ToList()));
+                this.OnPersistCommit(cmd, attempt);
+                var checkpointNumber = cmd.ExecuteScalar(this._dialect.PersistCommit).ToLong();
                 return new Commit(
                     attempt.BucketId,
                     attempt.StreamId,
@@ -371,33 +371,33 @@
 
         private bool DetectDuplicate(CommitAttempt attempt)
         {
-            string streamId = _streamIdHasher.GetHash(attempt.StreamId);
-            return ExecuteCommand(cmd =>
+            string streamId = this._streamIdHasher.GetHash(attempt.StreamId);
+            return this.ExecuteCommand(cmd =>
                 {
-                    cmd.AddParameter(_dialect.BucketId, attempt.BucketId, DbType.AnsiString);
-                    cmd.AddParameter(_dialect.StreamId, streamId, DbType.AnsiString);
-                    cmd.AddParameter(_dialect.CommitId, attempt.CommitId);
-                    cmd.AddParameter(_dialect.CommitSequence, attempt.CommitSequence);
-                    object value = cmd.ExecuteScalar(_dialect.DuplicateCommit);
+                    cmd.AddParameter(this._dialect.BucketId, attempt.BucketId, DbType.AnsiString);
+                    cmd.AddParameter(this._dialect.StreamId, streamId, DbType.AnsiString);
+                    cmd.AddParameter(this._dialect.CommitId, attempt.CommitId);
+                    cmd.AddParameter(this._dialect.CommitSequence, attempt.CommitSequence);
+                    object value = cmd.ExecuteScalar(this._dialect.DuplicateCommit);
                     return (value is long ? (long)value : (int)value) > 0;
                 });
         }
 
         protected virtual IEnumerable<T> ExecuteQuery<T>(Func<IContribDbStatement, IEnumerable<T>> query)
         {
-            ThrowWhenDisposed();
+            this.ThrowWhenDisposed();
 
-            TransactionScope scope = OpenQueryScope();
+            TransactionScope scope = this.OpenQueryScope();
             IDbConnection connection = null;
             IDbTransaction transaction = null;
             IContribDbStatement statement = null;
 
             try
             {
-                connection = _connectionFactory.Open();
-                transaction = _dialect.OpenTransaction(connection);
-                statement = _dialect.BuildStatement(scope, connection, transaction);
-                statement.PageSize = _pageSize;
+                connection = this._connectionFactory.Open();
+                transaction = this._dialect.OpenTransaction(connection);
+                statement = this._dialect.BuildStatement(scope, connection, transaction);
+                statement.PageSize = this._pageSize;
 
                 Logger.Verbose(Messages.ExecutingQuery);
                 return query(statement);
@@ -433,12 +433,12 @@
 
         protected virtual TransactionScope OpenQueryScope()
         {
-            return OpenCommandScope() ?? new TransactionScope(TransactionScopeOption.Suppress);
+            return this.OpenCommandScope() ?? new TransactionScope(TransactionScopeOption.Suppress);
         }
 
         private void ThrowWhenDisposed()
         {
-            if (!_disposed)
+            if (!this._disposed)
             {
                 return;
             }
@@ -449,17 +449,17 @@
 
         private T ExecuteCommand<T>(Func<IContribDbStatement, T> command)
         {
-            return ExecuteCommand((_, statement) => command(statement));
+            return this.ExecuteCommand((_, statement) => command(statement));
         }
 
         protected virtual T ExecuteCommand<T>(Func<IDbConnection, IContribDbStatement, T> command)
         {
-            ThrowWhenDisposed();
+            this.ThrowWhenDisposed();
 
-            using (TransactionScope scope = OpenCommandScope())
-            using (IDbConnection connection = _connectionFactory.Open())
-            using (IDbTransaction transaction = _dialect.OpenTransaction(connection))
-            using (IContribDbStatement statement = _dialect.BuildStatement(scope, connection, transaction))
+            using (TransactionScope scope = this.OpenCommandScope())
+            using (IDbConnection connection = this._connectionFactory.Open())
+            using (IDbTransaction transaction = this._dialect.OpenTransaction(connection))
+            using (IContribDbStatement statement = this._dialect.BuildStatement(scope, connection, transaction))
             {
                 try
                 {
@@ -500,7 +500,7 @@
 
         protected virtual TransactionScope OpenCommandScope()
         {
-            return new TransactionScope(_scopeOption);
+            return new TransactionScope(this._scopeOption);
         }
 
         private static bool RecoverableException(Exception e)
@@ -519,7 +519,7 @@
                 {
                     throw new ArgumentNullException("streamIdHasher");
                 }
-                _streamIdHasher = streamIdHasher;
+                this._streamIdHasher = streamIdHasher;
             }
             public string GetHash(string streamId)
             {
@@ -527,7 +527,7 @@
                 {
                     throw new ArgumentException(Messages.StreamIdIsNullEmptyOrWhiteSpace);
                 }
-                string streamIdHash = _streamIdHasher.GetHash(streamId);
+                string streamIdHash = this._streamIdHasher.GetHash(streamId);
                 if (string.IsNullOrWhiteSpace(streamIdHash))
                 {
                     throw new InvalidOperationException(Messages.StreamIdHashIsNullEmptyOrWhiteSpace);

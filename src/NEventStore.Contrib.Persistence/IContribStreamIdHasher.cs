@@ -1,4 +1,4 @@
-namespace NEventStore.Persistence.Sql
+namespace NEventStore.Contrib.Persistence
 {
     /// <summary>
     /// Defines a method to generate a hash of a stream ID.

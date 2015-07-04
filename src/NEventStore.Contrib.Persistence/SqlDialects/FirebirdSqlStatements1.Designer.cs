@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NEventStore.Persistence.Sql.SqlDialects {
+namespace NEventStore.Contrib.Persistence.SqlDialects {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("NEventStore.Persistence.Sql.SqlDialects.FirebirdSqlStatements", typeof(FirebirdSqlStatements).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("NEventStore.Contrib.Persistence.SqlDialects.FirebirdSqlStatements", typeof(FirebirdSqlStatements).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

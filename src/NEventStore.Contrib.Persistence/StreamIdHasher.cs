@@ -1,4 +1,4 @@
-namespace NEventStore.Persistence.Sql
+namespace NEventStore.Contrib.Persistence
 {
 	using System;
 	using System.Reflection;

@@ -1,8 +1,6 @@
-﻿namespace NEventStore
+﻿namespace NEventStore.Contrib.Persistence
 {
-    using NEventStore.Persistence.Sql;
-
-    /// <summary>
+	/// <summary>
     /// Extensions which allows usign firebird-specific Persistence due to the existing problems with sending more than one statement in a single command.
     /// </summary>
     public static class FirebirdWireupExtension

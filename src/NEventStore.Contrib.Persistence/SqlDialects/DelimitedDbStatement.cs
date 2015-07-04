@@ -1,13 +1,12 @@
-namespace NEventStore.Persistence.Sql.SqlDialects
+namespace NEventStore.Contrib.Persistence.SqlDialects
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data;
-    using System.Linq;
-    using System.Transactions;
-    using NEventStore.Persistence.Sql;
+	using System;
+	using System.Collections.Generic;
+	using System.Data;
+	using System.Linq;
+	using System.Transactions;
 
-    public class DelimitedDbStatement : CommonDbStatement
+	public class DelimitedDbStatement : CommonDbStatement
     {
         private const string Delimiter = ";";
 

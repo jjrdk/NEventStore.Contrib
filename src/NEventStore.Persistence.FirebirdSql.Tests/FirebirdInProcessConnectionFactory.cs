@@ -5,7 +5,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 	using System.Data.Common;
 	using System.Diagnostics;
 
-	using NEventStore.Persistence.Sql;
+	using NEventStore.Contrib.Persistence;
 
 	internal class FirebirdInProcessConnectionFactory : IConnectionFactory
 	{

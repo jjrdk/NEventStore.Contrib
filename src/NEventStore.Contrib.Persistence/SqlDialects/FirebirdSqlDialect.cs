@@ -1,4 +1,4 @@
-namespace NEventStore.Persistence.Sql.SqlDialects
+namespace NEventStore.Contrib.Persistence.SqlDialects
 {
 	using System;
 

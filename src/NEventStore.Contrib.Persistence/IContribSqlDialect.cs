@@ -1,11 +1,12 @@
-namespace NEventStore.Persistence.Sql
+namespace NEventStore.Contrib.Persistence
 {
-    using System;
-    using System.Data;
-    using System.Transactions;
-    using NEventStore.Persistence.Sql.SqlDialects;
+	using System;
+	using System.Data;
+	using System.Transactions;
 
-    public interface IContribSqlDialect
+	using NEventStore.Contrib.Persistence.SqlDialects;
+
+	public interface IContribSqlDialect
     {
         string InitializeStorage { get; }
         string PurgeStorage { get; }

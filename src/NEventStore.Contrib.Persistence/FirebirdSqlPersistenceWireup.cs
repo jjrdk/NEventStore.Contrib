@@ -1,11 +1,10 @@
-﻿namespace NEventStore
+﻿namespace NEventStore.Contrib.Persistence
 {
-	using System.Transactions;
 	using System;
 	using System.Security.Cryptography;
+	using System.Transactions;
 
 	using NEventStore.Logging;
-	using NEventStore.Persistence.Sql;
 	using NEventStore.Serialization;
 
 	/// <summary>
@@ -26,16 +25,16 @@
 		public FirebirdSqlPersistenceWireup(Wireup wireup, IConnectionFactory connectionFactory)
 			: base(wireup)
 		{
-			Container.Register<IContribSqlDialect>(c => null); // auto-detect
-			Container.Register<IContribStreamIdHasher>(c => new StreamIdHasher<SHA1>());
+			this.Container.Register<IContribSqlDialect>(c => null); // auto-detect
+			this.Container.Register<IContribStreamIdHasher>(c => new StreamIdHasher<SHA1>());
 
-			Container.Register(c => new FirebirdSqlPersistenceFactory(
+			this.Container.Register(c => new FirebirdSqlPersistenceFactory(
 				connectionFactory,
 				c.Resolve<ISerialize>(),
 				c.Resolve<IContribSqlDialect>(),
 				c.Resolve<IContribStreamIdHasher>(),
 				c.Resolve<TransactionScopeOption>(),
-				_pageSize).Build());
+				this._pageSize).Build());
 		}
 
 		/// <summary>
@@ -45,7 +44,7 @@
 		/// <returns>FirebirdSqlPersistenceWireup.</returns>
 		public virtual FirebirdSqlPersistenceWireup WithDialect(IContribSqlDialect instance)
 		{
-			Container.Register(instance);
+			this.Container.Register(instance);
 			return this;
 		}
 
@@ -56,7 +55,7 @@
 		/// <returns>FirebirdSqlPersistenceWireup.</returns>
 		public virtual FirebirdSqlPersistenceWireup PageEvery(int records)
 		{
-			_pageSize = records;
+			this._pageSize = records;
 			return this;
 		}
 
@@ -67,7 +66,7 @@
 		/// <returns>FirebirdSqlPersistenceWireup.</returns>
 		public virtual FirebirdSqlPersistenceWireup WithStreamIdHasher(IContribStreamIdHasher instance)
 		{
-			Container.Register(instance);
+			this.Container.Register(instance);
 			return this;
 		}
 
@@ -78,7 +77,7 @@
 		/// <returns>FirebirdSqlPersistenceWireup.</returns>
 		public virtual FirebirdSqlPersistenceWireup WithStreamIdHasher(Func<string, string> getStreamIdHash)
 		{
-			return WithStreamIdHasher(new DelegateStreamIdHasher(getStreamIdHash));
+			return this.WithStreamIdHasher(new DelegateStreamIdHasher(getStreamIdHash));
 		}
 	}
 }

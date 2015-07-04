@@ -1,11 +1,10 @@
-namespace NEventStore.Persistence.Sql.SqlDialects
+namespace NEventStore.Contrib.Persistence.SqlDialects
 {
-    using System;
-    using System.Data;
-    using System.Transactions;
-    using NEventStore.Persistence.Sql;
+	using System;
+	using System.Data;
+	using System.Transactions;
 
-    public abstract class CommonSqlDialect : IContribSqlDialect
+	public abstract class CommonSqlDialect : IContribSqlDialect
     {
         public abstract string InitializeStorage { get; }
 
@@ -185,7 +184,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
         public virtual void AddPayloadParamater(IConnectionFactory connectionFactory, IDbConnection connection, IContribDbStatement cmd, byte[] payload)
         {
-            cmd.AddParameter(Payload, payload);
+            cmd.AddParameter(this.Payload, payload);
         }
 
         public virtual DateTime ToDateTime(object value)
@@ -196,7 +195,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
         public virtual NextPageDelegate NextPageDelegate
         {
-            get { return (q, r) => q.SetParameter(CommitSequence, r.CommitSequence()); }
+            get { return (q, r) => q.SetParameter(this.CommitSequence, r.CommitSequence()); }
         }
 
         public virtual IDbTransaction OpenTransaction(IDbConnection connection)

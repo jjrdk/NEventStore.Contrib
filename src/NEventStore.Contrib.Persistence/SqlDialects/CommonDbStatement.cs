@@ -1,13 +1,13 @@
-namespace NEventStore.Persistence.Sql.SqlDialects
+namespace NEventStore.Contrib.Persistence.SqlDialects
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data;
-    using System.Transactions;
-    using NEventStore.Logging;
-    using NEventStore.Persistence.Sql;
+	using System;
+	using System.Collections.Generic;
+	using System.Data;
+	using System.Transactions;
 
-    public class CommonDbStatement : IContribDbStatement
+	using NEventStore.Logging;
+
+	public class CommonDbStatement : IContribDbStatement
     {
         private const int InfinitePageSize = 0;
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (CommonDbStatement));
@@ -22,24 +22,24 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             IDbConnection connection,
             IDbTransaction transaction)
         {
-            Parameters = new Dictionary<string, Tuple<object, DbType?>>();
+            this.Parameters = new Dictionary<string, Tuple<object, DbType?>>();
 
-            _dialect = dialect;
-            _scope = scope;
-            _connection = connection;
-            _transaction = transaction;
+            this._dialect = dialect;
+            this._scope = scope;
+            this._connection = connection;
+            this._transaction = transaction;
         }
 
         protected IDictionary<string, Tuple<object, DbType?>> Parameters { get; private set; }
 
         protected IContribSqlDialect Dialect
         {
-            get { return _dialect; }
+            get { return this._dialect; }
         }
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -48,14 +48,14 @@ namespace NEventStore.Persistence.Sql.SqlDialects
         public virtual void AddParameter(string name, object value, DbType? parameterType = null)
         {
             Logger.Debug(Messages.AddingParameter, name);
-            Parameters[name] = Tuple.Create(_dialect.CoalesceParameterValue(value), parameterType);
+            this.Parameters[name] = Tuple.Create(this._dialect.CoalesceParameterValue(value), parameterType);
         }
 
         public virtual int ExecuteWithoutExceptions(string commandText)
         {
             try
             {
-                return ExecuteNonQuery(commandText);
+                return this.ExecuteNonQuery(commandText);
             }
             catch (Exception)
             {
@@ -68,14 +68,14 @@ namespace NEventStore.Persistence.Sql.SqlDialects
         {
             try
             {
-                using (IDbCommand command = BuildCommand(commandText))
+                using (IDbCommand command = this.BuildCommand(commandText))
                 {
                     return command.ExecuteNonQuery();
                 }
             }
             catch (Exception e)
             {
-                if (_dialect.IsDuplicate(e))
+                if (this._dialect.IsDuplicate(e))
                 {
                     throw new UniqueKeyViolationException(e.Message, e);
                 }
@@ -88,14 +88,14 @@ namespace NEventStore.Persistence.Sql.SqlDialects
         {
             try
             {
-                using (IDbCommand command = BuildCommand(commandText))
+                using (IDbCommand command = this.BuildCommand(commandText))
                 {
                     return command.ExecuteScalar();
                 }
             }
             catch (Exception e)
             {
-                if (_dialect.IsDuplicate(e))
+                if (this._dialect.IsDuplicate(e))
                 {
                     throw new UniqueKeyViolationException(e.Message, e);
                 }
@@ -105,49 +105,49 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
         public virtual IEnumerable<IDataRecord> ExecuteWithQuery(string queryText)
         {
-            return ExecuteQuery(queryText, (query, latest) => { }, InfinitePageSize);
+            return this.ExecuteQuery(queryText, (query, latest) => { }, InfinitePageSize);
         }
 
         public virtual IEnumerable<IDataRecord> ExecutePagedQuery(string queryText, NextPageDelegate nextpage)
         {
-            int pageSize = _dialect.CanPage ? PageSize : InfinitePageSize;
+            int pageSize = this._dialect.CanPage ? this.PageSize : InfinitePageSize;
             if (pageSize > 0)
             {
                 Logger.Verbose(Messages.MaxPageSize, pageSize);
-                Parameters.Add(_dialect.Limit, Tuple.Create((object) pageSize, (DbType?) null));
+                this.Parameters.Add(this._dialect.Limit, Tuple.Create((object) pageSize, (DbType?) null));
             }
 
-            return ExecuteQuery(queryText, nextpage, pageSize);
+            return this.ExecuteQuery(queryText, nextpage, pageSize);
         }
 
         protected virtual void Dispose(bool disposing)
         {
             Logger.Verbose(Messages.DisposingStatement);
 
-            if (_transaction != null)
+            if (this._transaction != null)
             {
-                _transaction.Dispose();
+                this._transaction.Dispose();
             }
 
-            if (_connection != null)
+            if (this._connection != null)
             {
-                _connection.Dispose();
+                this._connection.Dispose();
             }
 
-            if (_scope != null)
+            if (this._scope != null)
             {
-                _scope.Dispose();
+                this._scope.Dispose();
             }
         }
 
         protected virtual IEnumerable<IDataRecord> ExecuteQuery(string queryText, NextPageDelegate nextpage, int pageSize)
         {
-            Parameters.Add(_dialect.Skip, Tuple.Create((object) 0, (DbType?) null));
-            IDbCommand command = BuildCommand(queryText);
+            this.Parameters.Add(this._dialect.Skip, Tuple.Create((object) 0, (DbType?) null));
+            IDbCommand command = this.BuildCommand(queryText);
 
             try
             {
-                return new PagedEnumerationCollection(_scope, _dialect, command, nextpage, pageSize, this);
+                return new PagedEnumerationCollection(this._scope, this._dialect, command, nextpage, pageSize, this);
             }
             catch (Exception)
             {
@@ -159,7 +159,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
         protected virtual IDbCommand BuildCommand(string statement)
         {
             Logger.Verbose(Messages.CreatingCommand);
-            IDbCommand command = _connection.CreateCommand();
+            IDbCommand command = this._connection.CreateCommand();
 
             int timeout = 0;
             if( int.TryParse( System.Configuration.ConfigurationManager.AppSettings["NEventStore.SqlCommand.Timeout"], out timeout ) ) 
@@ -167,22 +167,22 @@ namespace NEventStore.Persistence.Sql.SqlDialects
               command.CommandTimeout = timeout;
             }
 
-            command.Transaction = _transaction;
+            command.Transaction = this._transaction;
             command.CommandText = statement;
 
-            Logger.Verbose(Messages.ClientControlledTransaction, _transaction != null);
+            Logger.Verbose(Messages.ClientControlledTransaction, this._transaction != null);
             Logger.Verbose(Messages.CommandTextToExecute, statement);
 
-            BuildParameters(command);
+            this.BuildParameters(command);
 
             return command;
         }
 
         protected virtual void BuildParameters(IDbCommand command)
         {
-            foreach (var item in Parameters)
+            foreach (var item in this.Parameters)
             {
-                BuildParameter(command, item.Key, item.Value.Item1, item.Value.Item2);
+                this.BuildParameter(command, item.Key, item.Value.Item1, item.Value.Item2);
             }
         }
 
@@ -190,7 +190,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
         {
             IDbDataParameter parameter = command.CreateParameter();
             parameter.ParameterName = name;
-            SetParameterValue(parameter, value, dbType);
+            this.SetParameterValue(parameter, value, dbType);
 
             Logger.Verbose(Messages.BindingParameter, name, parameter.Value);
             command.Parameters.Add(parameter);

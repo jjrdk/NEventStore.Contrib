@@ -1,8 +1,10 @@
-namespace NEventStore.Persistence.Sql
+namespace NEventStore.Contrib.Persistence
 {
-    using System.Data;
+	using System.Data;
 
-    internal static class StreamHeadExtensions
+	using NEventStore.Persistence;
+
+	internal static class StreamHeadExtensions
     {
         private const int BucketIdIndex = 0;
         private const int StreamIdIndex = 2;

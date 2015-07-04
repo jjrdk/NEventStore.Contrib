@@ -1,9 +1,9 @@
-namespace NEventStore.Persistence.Sql
+namespace NEventStore.Contrib.Persistence
 {
-    using System;
-    using System.Runtime.Serialization;
+	using System;
+	using System.Runtime.Serialization;
 
-    /// <summary>
+	/// <summary>
     ///     Indicates that a unique constraint or duplicate key violation occurred.
     /// </summary>
     [Serializable]

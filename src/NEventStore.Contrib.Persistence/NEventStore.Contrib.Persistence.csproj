@@ -8,8 +8,8 @@
     <ProjectGuid>{F9E7FD69-0818-48CA-9249-5387739E1B6A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NEventStore.Persistence.Sql</RootNamespace>
-    <AssemblyName>NEventStore.Persistence.Sql</AssemblyName>
+    <RootNamespace>NEventStore.Contrib.Persistence</RootNamespace>
+    <AssemblyName>NEventStore.Contrib.Persistence</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>false</SignAssembly>
@@ -36,6 +36,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Release\NEventStore.Contrib.Persistence.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\..\NEventStore.Persistence.Sql\dependencies\NEventStore\src\VersionAssemblyInfo.cs">

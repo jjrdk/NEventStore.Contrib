@@ -1,10 +1,9 @@
-﻿namespace NEventStore.Persistence.Sql
+﻿namespace NEventStore.Contrib.Persistence
 {
-	using System;
 	using System.Security.Cryptography;
 	using System.Transactions;
 
-	using NEventStore.Persistence.Sql.SqlDialects;
+	using NEventStore.Persistence;
 	using NEventStore.Serialization;
 
 	public class FirebirdSqlPersistenceFactory : IPersistenceFactory
@@ -20,18 +19,18 @@
 
 		public FirebirdSqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer, IContribSqlDialect dialect, IContribStreamIdHasher streamIdHasher = null, TransactionScopeOption scopeOption = TransactionScopeOption.Suppress, int pageSize = DefaultPageSize)
 		{
-			_connectionFactory = factory;
-			_dialect = dialect;
-			_transactionScopeOption = scopeOption;
-			_serializer = serializer;
-			_scopeOption = scopeOption;
-			_streamIdHasher = streamIdHasher ?? new StreamIdHasher<SHA1>();
-			_pagesize = pageSize;
+			this._connectionFactory = factory;
+			this._dialect = dialect;
+			this._transactionScopeOption = scopeOption;
+			this._serializer = serializer;
+			this._scopeOption = scopeOption;
+			this._streamIdHasher = streamIdHasher ?? new StreamIdHasher<SHA1>();
+			this._pagesize = pageSize;
 		}
 
 		public IPersistStreams Build()
 		{
-			return new FirebirdSqlPersistenceEngine(_connectionFactory, _dialect, _serializer, _transactionScopeOption, _pagesize, _streamIdHasher);
+			return new FirebirdSqlPersistenceEngine(this._connectionFactory, this._dialect, this._serializer, this._transactionScopeOption, this._pagesize, this._streamIdHasher);
 		}
 	}
 }

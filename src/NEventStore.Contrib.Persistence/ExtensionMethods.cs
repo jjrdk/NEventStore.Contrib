@@ -1,10 +1,11 @@
-namespace NEventStore.Persistence.Sql
+namespace NEventStore.Contrib.Persistence
 {
-    using System;
-    using System.Data;
-    using NEventStore.Logging;
+	using System;
+	using System.Data;
 
-    internal static class ExtensionMethods
+	using NEventStore.Logging;
+
+	internal static class ExtensionMethods
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (ExtensionMethods));
 

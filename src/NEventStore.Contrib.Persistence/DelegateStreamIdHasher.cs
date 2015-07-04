@@ -1,8 +1,8 @@
-namespace NEventStore.Persistence.Sql
+namespace NEventStore.Contrib.Persistence
 {
-    using System;
+	using System;
 
-    public class DelegateStreamIdHasher : IContribStreamIdHasher
+	public class DelegateStreamIdHasher : IContribStreamIdHasher
     {
         private readonly Func<string, string> _getHash;
 
@@ -12,12 +12,12 @@ namespace NEventStore.Persistence.Sql
             {
                 throw new ArgumentNullException("getHash");
             }
-            _getHash = getHash;
+            this._getHash = getHash;
         }
 
         public string GetHash(string streamId)
         {
-            return _getHash(streamId);
+            return this._getHash(streamId);
         }
     }
 }

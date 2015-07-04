@@ -1,9 +1,9 @@
-namespace NEventStore.Persistence.Sql
+namespace NEventStore.Contrib.Persistence
 {
-    using System;
-    using System.Data;
+	using System;
+	using System.Data;
 
-    public class ConnectionScope : ThreadScope<IDbConnection>, IDbConnection
+	public class ConnectionScope : ThreadScope<IDbConnection>, IDbConnection
     {
         public ConnectionScope(string connectionName, Func<IDbConnection> factory)
             : base(connectionName, factory)
@@ -11,12 +11,12 @@ namespace NEventStore.Persistence.Sql
 
         IDbTransaction IDbConnection.BeginTransaction()
         {
-            return Current.BeginTransaction();
+            return this.Current.BeginTransaction();
         }
 
         IDbTransaction IDbConnection.BeginTransaction(IsolationLevel il)
         {
-            return Current.BeginTransaction(il);
+            return this.Current.BeginTransaction(il);
         }
 
         void IDbConnection.Close()
@@ -26,38 +26,38 @@ namespace NEventStore.Persistence.Sql
 
         void IDbConnection.ChangeDatabase(string databaseName)
         {
-            Current.ChangeDatabase(databaseName);
+            this.Current.ChangeDatabase(databaseName);
         }
 
         IDbCommand IDbConnection.CreateCommand()
         {
-            return Current.CreateCommand();
+            return this.Current.CreateCommand();
         }
 
         void IDbConnection.Open()
         {
-            Current.Open();
+            this.Current.Open();
         }
 
         string IDbConnection.ConnectionString
         {
-            get { return Current.ConnectionString; }
-            set { Current.ConnectionString = value; }
+            get { return this.Current.ConnectionString; }
+            set { this.Current.ConnectionString = value; }
         }
 
         int IDbConnection.ConnectionTimeout
         {
-            get { return Current.ConnectionTimeout; }
+            get { return this.Current.ConnectionTimeout; }
         }
 
         string IDbConnection.Database
         {
-            get { return Current.Database; }
+            get { return this.Current.Database; }
         }
 
         ConnectionState IDbConnection.State
         {
-            get { return Current.State; }
+            get { return this.Current.State; }
         }
     }
 }

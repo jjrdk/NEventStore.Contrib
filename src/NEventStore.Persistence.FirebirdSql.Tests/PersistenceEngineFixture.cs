@@ -5,8 +5,8 @@
 
 	using FirebirdSql.Data.FirebirdClient;
 
-	using NEventStore.Persistence.Sql;
-	using NEventStore.Persistence.Sql.SqlDialects;
+	using NEventStore.Contrib.Persistence;
+	using NEventStore.Contrib.Persistence.SqlDialects;
 	using NEventStore.Serialization;
 
 	public partial class PersistenceEngineFixture

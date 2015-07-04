@@ -1,10 +1,11 @@
-namespace NEventStore.Persistence.Sql
+namespace NEventStore.Contrib.Persistence
 {
-    using System.Data;
-    using NEventStore.Logging;
-    using NEventStore.Serialization;
+	using System.Data;
 
-    internal static class SnapshotExtensions
+	using NEventStore.Logging;
+	using NEventStore.Serialization;
+
+	internal static class SnapshotExtensions
     {
         private const int BucketIdIndex = 0;
         private const int StreamRevisionIndex = 2;

@@ -1,14 +1,15 @@
-namespace NEventStore.Persistence.Sql.SqlDialects
+namespace NEventStore.Contrib.Persistence.SqlDialects
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Data;
-    using System.Transactions;
-    using NEventStore.Logging;
-    using NEventStore.Persistence.Sql;
+	using System;
+	using System.Collections;
+	using System.Collections.Generic;
+	using System.Data;
+	using System.Transactions;
 
-    public class PagedEnumerationCollection : IEnumerable<IDataRecord>, IEnumerator<IDataRecord>
+	using NEventStore.Logging;
+	using NEventStore.Persistence;
+
+	public class PagedEnumerationCollection : IEnumerable<IDataRecord>, IEnumerator<IDataRecord>
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (PagedEnumerationCollection));
         private readonly IDbCommand _command;
@@ -31,17 +32,17 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             int pageSize,
             params IDisposable[] disposable)
         {
-            _scope = scope;
-            _dialect = dialect;
-            _command = command;
-            _nextpage = nextpage;
-            _pageSize = pageSize;
-            _disposable = disposable ?? _disposable;
+            this._scope = scope;
+            this._dialect = dialect;
+            this._command = command;
+            this._nextpage = nextpage;
+            this._pageSize = pageSize;
+            this._disposable = disposable ?? this._disposable;
         }
 
         public virtual IEnumerator<IDataRecord> GetEnumerator()
         {
-            if (_disposed)
+            if (this._disposed)
             {
                 throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
             }
@@ -51,23 +52,23 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return this.GetEnumerator();
         }
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         bool IEnumerator.MoveNext()
         {
-            if (_disposed)
+            if (this._disposed)
             {
                 throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
             }
 
-            if (MoveToNextRecord())
+            if (this.MoveToNextRecord())
             {
                 return true;
             }
@@ -85,12 +86,12 @@ namespace NEventStore.Persistence.Sql.SqlDialects
         {
             get
             {
-                if (_disposed)
+                if (this._disposed)
                 {
                     throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
                 }
 
-                return _current = _reader;
+                return this._current = this._reader;
             }
         }
 
@@ -101,35 +102,35 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposing || _disposed)
+            if (!disposing || this._disposed)
             {
                 return;
             }
 
-            _disposed = true;
-            _position = 0;
-            _current = null;
+            this._disposed = true;
+            this._position = 0;
+            this._current = null;
 
-            if (_reader != null)
+            if (this._reader != null)
             {
-                _reader.Dispose();
+                this._reader.Dispose();
             }
 
-            _reader = null;
+            this._reader = null;
 
-            if (_command != null)
+            if (this._command != null)
             {
-                _command.Dispose();
+                this._command.Dispose();
             }
 
             // queries do not modify state and thus calling Complete() on a so-called 'failed' query only
             // allows any outer transaction scope to decide the fate of the transaction
-            if (_scope != null)
+            if (this._scope != null)
             {
-                _scope.Complete(); // caller will dispose scope.
+                this._scope.Complete(); // caller will dispose scope.
             }
 
-            foreach (var dispose in _disposable)
+            foreach (var dispose in this._disposable)
             {
                 dispose.Dispose();
             }
@@ -137,36 +138,36 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
         private bool MoveToNextRecord()
         {
-            if (_pageSize > 0 && _position >= _pageSize)
+            if (this._pageSize > 0 && this._position >= this._pageSize)
             {
-                _command.SetParameter(_dialect.Skip, _position);
-                _nextpage(_command, _current);
+                this._command.SetParameter(this._dialect.Skip, this._position);
+                this._nextpage(this._command, this._current);
             }
 
-            _reader = _reader ?? OpenNextPage();
+            this._reader = this._reader ?? this.OpenNextPage();
 
-            if (_reader.Read())
+            if (this._reader.Read())
             {
-                return IncrementPosition();
+                return this.IncrementPosition();
             }
 
-            if (!PagingEnabled())
+            if (!this.PagingEnabled())
             {
                 return false;
             }
 
-            if (!PageCompletelyEnumerated())
+            if (!this.PageCompletelyEnumerated())
             {
                 return false;
             }
 
-            Logger.Verbose(Messages.EnumeratedRowCount, _position);
-            _reader.Dispose();
-            _reader = OpenNextPage();
+            Logger.Verbose(Messages.EnumeratedRowCount, this._position);
+            this._reader.Dispose();
+            this._reader = this.OpenNextPage();
 
-            if (_reader.Read())
+            if (this._reader.Read())
             {
-                return IncrementPosition();
+                return this.IncrementPosition();
             }
 
             return false;
@@ -174,25 +175,25 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
         private bool IncrementPosition()
         {
-            _position++;
+            this._position++;
             return true;
         }
 
         private bool PagingEnabled()
         {
-            return _pageSize > 0;
+            return this._pageSize > 0;
         }
 
         private bool PageCompletelyEnumerated()
         {
-            return _position > 0 && 0 == _position%_pageSize;
+            return this._position > 0 && 0 == this._position%this._pageSize;
         }
 
         private IDataReader OpenNextPage()
         {
             try
             {
-                return _command.ExecuteReader();
+                return this._command.ExecuteReader();
             }
             catch (Exception e)
             {

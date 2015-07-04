@@ -1,11 +1,12 @@
-namespace NEventStore.Persistence.Sql
+namespace NEventStore.Contrib.Persistence
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data;
-    using NEventStore.Persistence.Sql.SqlDialects;
+	using System;
+	using System.Collections.Generic;
+	using System.Data;
 
-    public interface IContribDbStatement : IDisposable
+	using NEventStore.Contrib.Persistence.SqlDialects;
+
+	public interface IContribDbStatement : IDisposable
     {
         int PageSize { get; set; }
 
