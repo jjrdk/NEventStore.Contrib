@@ -5,7 +5,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
     using System.Transactions;
     using NEventStore.Persistence.Sql;
 
-    public abstract class CommonSqlDialect : ISqlDialect
+    public abstract class CommonSqlDialect : IContribSqlDialect
     {
         public abstract string InitializeStorage { get; }
 
@@ -183,7 +183,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
         public abstract bool IsDuplicate(Exception exception);
 
-        public virtual void AddPayloadParamater(IConnectionFactory connectionFactory, IDbConnection connection, IDbStatement cmd, byte[] payload)
+        public virtual void AddPayloadParamater(IConnectionFactory connectionFactory, IDbConnection connection, IContribDbStatement cmd, byte[] payload)
         {
             cmd.AddParameter(Payload, payload);
         }
@@ -204,7 +204,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             return null;
         }
 
-        public virtual IDbStatement BuildStatement(
+        public virtual IContribDbStatement BuildStatement(
             TransactionScope scope, IDbConnection connection, IDbTransaction transaction)
         {
             return new CommonDbStatement(this, scope, connection, transaction);

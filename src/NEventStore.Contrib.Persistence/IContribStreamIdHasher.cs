@@ -3,7 +3,7 @@ namespace NEventStore.Persistence.Sql
     /// <summary>
     /// Defines a method to generate a hash of a stream ID.
     /// </summary>
-    public interface IStreamIdHasher
+    public interface IContribStreamIdHasher
     {
         /// <summary>
         /// Gets a hash of the stream ID. Hash length must be less than or equal to 40 characters.

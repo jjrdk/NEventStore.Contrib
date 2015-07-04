@@ -5,7 +5,7 @@ namespace NEventStore.Persistence.Sql
     using System.Transactions;
     using NEventStore.Persistence.Sql.SqlDialects;
 
-    public interface ISqlDialect
+    public interface IContribSqlDialect
     {
         string InitializeStorage { get; }
         string PurgeStorage { get; }
@@ -53,12 +53,12 @@ namespace NEventStore.Persistence.Sql
 
         IDbTransaction OpenTransaction(IDbConnection connection);
 
-        IDbStatement BuildStatement(
+        IContribDbStatement BuildStatement(
             TransactionScope scope, IDbConnection connection, IDbTransaction transaction);
 
         bool IsDuplicate(Exception exception);
 
-        void AddPayloadParamater(IConnectionFactory connectionFactory, IDbConnection connection, IDbStatement cmd, byte[] payload);
+        void AddPayloadParamater(IConnectionFactory connectionFactory, IDbConnection connection, IContribDbStatement cmd, byte[] payload);
 
         DateTime ToDateTime(object value);
 

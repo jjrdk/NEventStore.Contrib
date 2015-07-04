@@ -2,6 +2,7 @@
 {
 	using System.Transactions;
 	using System;
+	using System.Security.Cryptography;
 
 	using NEventStore.Logging;
 	using NEventStore.Persistence.Sql;
@@ -25,14 +26,14 @@
 		public FirebirdSqlPersistenceWireup(Wireup wireup, IConnectionFactory connectionFactory)
 			: base(wireup)
 		{
-			Container.Register<ISqlDialect>(c => null); // auto-detect
-			Container.Register<IStreamIdHasher>(c => new Sha1StreamIdHasher());
+			Container.Register<IContribSqlDialect>(c => null); // auto-detect
+			Container.Register<IContribStreamIdHasher>(c => new StreamIdHasher<SHA1>());
 
 			Container.Register(c => new FirebirdSqlPersistenceFactory(
 				connectionFactory,
 				c.Resolve<ISerialize>(),
-				c.Resolve<ISqlDialect>(),
-				c.Resolve<IStreamIdHasher>(),
+				c.Resolve<IContribSqlDialect>(),
+				c.Resolve<IContribStreamIdHasher>(),
 				c.Resolve<TransactionScopeOption>(),
 				_pageSize).Build());
 		}
@@ -42,7 +43,7 @@
 		/// </summary>
 		/// <param name="instance">The instance.</param>
 		/// <returns>FirebirdSqlPersistenceWireup.</returns>
-		public virtual FirebirdSqlPersistenceWireup WithDialect(ISqlDialect instance)
+		public virtual FirebirdSqlPersistenceWireup WithDialect(IContribSqlDialect instance)
 		{
 			Container.Register(instance);
 			return this;
@@ -64,7 +65,7 @@
 		/// </summary>
 		/// <param name="instance">The instance.</param>
 		/// <returns>FirebirdSqlPersistenceWireup.</returns>
-		public virtual FirebirdSqlPersistenceWireup WithStreamIdHasher(IStreamIdHasher instance)
+		public virtual FirebirdSqlPersistenceWireup WithStreamIdHasher(IContribStreamIdHasher instance)
 		{
 			Container.Register(instance);
 			return this;

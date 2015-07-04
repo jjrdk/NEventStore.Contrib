@@ -12,7 +12,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (PagedEnumerationCollection));
         private readonly IDbCommand _command;
-        private readonly ISqlDialect _dialect;
+        private readonly IContribSqlDialect _dialect;
         private readonly IEnumerable<IDisposable> _disposable = new IDisposable[] {};
         private readonly NextPageDelegate _nextpage;
         private readonly int _pageSize;
@@ -25,7 +25,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
         public PagedEnumerationCollection(
             TransactionScope scope,
-            ISqlDialect dialect,
+            IContribSqlDialect dialect,
             IDbCommand command,
             NextPageDelegate nextpage,
             int pageSize,

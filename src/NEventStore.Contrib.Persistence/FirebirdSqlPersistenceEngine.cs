@@ -1,44 +1,38 @@
-namespace NEventStore.Persistence.Sql
+﻿namespace NEventStore.Persistence.Sql
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Data;
     using System.Globalization;
-    using System.Linq;
+    using System.Security.Cryptography;
+    using System.Text;
     using System.Threading;
     using System.Transactions;
+
     using NEventStore.Logging;
     using NEventStore.Serialization;
 
-    public class SqlPersistenceEngine : IPersistStreams
+    public class FirebirdSqlPersistenceEngine : IPersistStreams
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(SqlPersistenceEngine));
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(FirebirdSqlPersistenceEngine));
         private static readonly DateTime EpochTime = new DateTime(1970, 1, 1);
         private readonly IConnectionFactory _connectionFactory;
-        private readonly ISqlDialect _dialect;
+        private readonly IContribSqlDialect _dialect;
         private readonly int _pageSize;
         private readonly TransactionScopeOption _scopeOption;
         private readonly ISerialize _serializer;
         private bool _disposed;
         private int _initialized;
-        private readonly IStreamIdHasher _streamIdHasher;
+        private readonly IContribStreamIdHasher _streamIdHasher;
 
-        public SqlPersistenceEngine(
+        public FirebirdSqlPersistenceEngine(
             IConnectionFactory connectionFactory,
-            ISqlDialect dialect,
-            ISerialize serializer,
-            TransactionScopeOption scopeOption,
-            int pageSize)
-            : this(connectionFactory, dialect, serializer, scopeOption, pageSize, new Sha1StreamIdHasher())
-        { }
-
-        public SqlPersistenceEngine(
-            IConnectionFactory connectionFactory,
-            ISqlDialect dialect,
+            IContribSqlDialect dialect,
             ISerialize serializer,
             TransactionScopeOption scopeOption,
             int pageSize,
-            IStreamIdHasher streamIdHasher)
+            IContribStreamIdHasher streamIdHasher)
         {
             if (connectionFactory == null)
             {
@@ -89,7 +83,16 @@ namespace NEventStore.Persistence.Sql
             }
 
             Logger.Debug(Messages.InitializingStorage);
-            ExecuteCommand(statement => statement.ExecuteWithoutExceptions(_dialect.InitializeStorage));
+
+            string[] statements = _dialect.InitializeStorage.Split(new[] { "__" }, StringSplitOptions.RemoveEmptyEntries);
+
+            StringBuilder builder = null;
+            bool buildingSetTermStatement = false;
+
+            foreach (string s in statements)
+            {
+                ExecuteCommand(statement => statement.ExecuteWithoutExceptions(s.Trim()));
+            }
         }
 
         public virtual IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
@@ -107,6 +110,10 @@ namespace NEventStore.Persistence.Sql
                     return query
                         .ExecutePagedQuery(statement, _dialect.NextPageDelegate)
                         .Select(x => x.GetCommit(_serializer, _dialect));
+
+                    /* return query
+                         .ExecutePagedQuery(statement, (q, r) => {})
+                         .Select(x => x.GetCommit(_serializer, _dialect));*/
                 });
         }
 
@@ -129,11 +136,7 @@ namespace NEventStore.Persistence.Sql
 
         public ICheckpoint GetCheckpoint(string checkpointToken)
         {
-            if (string.IsNullOrWhiteSpace(checkpointToken))
-            {
-                return new LongCheckpoint(-1);
-            }
-            return LongCheckpoint.Parse(checkpointToken);
+            return string.IsNullOrWhiteSpace(checkpointToken) ? null : LongCheckpoint.Parse(checkpointToken);
         }
 
         public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
@@ -249,7 +252,10 @@ namespace NEventStore.Persistence.Sql
         public virtual void Purge()
         {
             Logger.Warn(Messages.PurgingStorage);
-            ExecuteCommand(cmd => cmd.ExecuteNonQuery(_dialect.PurgeStorage));
+            foreach (var s in _dialect.PurgeStorage.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                ExecuteCommand(cmd => cmd.ExecuteNonQuery(s.Trim()));
+            }
         }
 
         public void Purge(string bucketId)
@@ -265,7 +271,13 @@ namespace NEventStore.Persistence.Sql
         public void Drop()
         {
             Logger.Warn(Messages.DroppingTables);
-            ExecuteCommand(cmd => cmd.ExecuteNonQuery(_dialect.Drop));
+
+            string[] tablesNames = _dialect.Drop.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string name in tablesNames)
+            {
+                ExecuteCommand(cmd => cmd.ExecuteNonQuery(name.Trim() + ";"));
+            }
         }
 
         public void DeleteStream(string bucketId, string streamId)
@@ -323,7 +335,7 @@ namespace NEventStore.Persistence.Sql
             _disposed = true;
         }
 
-        protected virtual void OnPersistCommit(IDbStatement cmd, CommitAttempt attempt)
+        protected virtual void OnPersistCommit(IContribDbStatement cmd, CommitAttempt attempt)
         { }
 
         private ICommit PersistCommit(CommitAttempt attempt)
@@ -371,14 +383,14 @@ namespace NEventStore.Persistence.Sql
                 });
         }
 
-        protected virtual IEnumerable<T> ExecuteQuery<T>(Func<IDbStatement, IEnumerable<T>> query)
+        protected virtual IEnumerable<T> ExecuteQuery<T>(Func<IContribDbStatement, IEnumerable<T>> query)
         {
             ThrowWhenDisposed();
 
             TransactionScope scope = OpenQueryScope();
             IDbConnection connection = null;
             IDbTransaction transaction = null;
-            IDbStatement statement = null;
+            IContribDbStatement statement = null;
 
             try
             {
@@ -435,19 +447,19 @@ namespace NEventStore.Persistence.Sql
             throw new ObjectDisposedException(Messages.AlreadyDisposed);
         }
 
-        private T ExecuteCommand<T>(Func<IDbStatement, T> command)
+        private T ExecuteCommand<T>(Func<IContribDbStatement, T> command)
         {
             return ExecuteCommand((_, statement) => command(statement));
         }
 
-        protected virtual T ExecuteCommand<T>(Func<IDbConnection, IDbStatement, T> command)
+        protected virtual T ExecuteCommand<T>(Func<IDbConnection, IContribDbStatement, T> command)
         {
             ThrowWhenDisposed();
 
             using (TransactionScope scope = OpenCommandScope())
             using (IDbConnection connection = _connectionFactory.Open())
             using (IDbTransaction transaction = _dialect.OpenTransaction(connection))
-            using (IDbStatement statement = _dialect.BuildStatement(scope, connection, transaction))
+            using (IContribDbStatement statement = _dialect.BuildStatement(scope, connection, transaction))
             {
                 try
                 {
@@ -496,12 +508,12 @@ namespace NEventStore.Persistence.Sql
             return e is UniqueKeyViolationException || e is StorageUnavailableException;
         }
 
-        private class StreamIdHasherValidator : IStreamIdHasher
+        private class StreamIdHasherValidator : IContribStreamIdHasher
         {
-            private readonly IStreamIdHasher _streamIdHasher;
-            private const int MaxStreamIdHashLength = 40;
+            private readonly IContribStreamIdHasher _streamIdHasher;
+            private const int MaxStreamIdHashLength = 128;
 
-            public StreamIdHasherValidator(IStreamIdHasher streamIdHasher)
+            public StreamIdHasherValidator(IContribStreamIdHasher streamIdHasher)
             {
                 if (streamIdHasher == null)
                 {

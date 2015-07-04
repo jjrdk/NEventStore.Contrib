@@ -8,7 +8,7 @@
     public static class FirebirdWireupExtension
     {
         /// <summary>
-        /// Extension method which allows using the FirebirdPersistenceEngine instead of SqlPersistenceEngine.
+        /// Extension method which allows using the FirebirdSqlPersistenceEngine instead of SqlPersistenceEngine.
         /// This Engine sends statements in different commands.
         /// </summary>
         /// <param name="wireup">The wireup.</param>

@@ -1,6 +1,7 @@
 ﻿namespace NEventStore.Persistence.AcceptanceTests
 {
 	using System;
+	using System.Security.Cryptography;
 
 	using FirebirdSql.Data.FirebirdClient;
 
@@ -17,12 +18,14 @@
 			FbConnection.ClearAllPools();
 			FbConnection.CreateDatabase(ConnectionString, true);
 
-			_createPersistence = pageSize =>
+			_createPersistence =
+				pageSize =>
 				new FirebirdSqlPersistenceFactory(
 					new FirebirdInProcessConnectionFactory(ConnectionString),
 					new BinarySerializer(),
 					new FirebirdSqlDialect(),
-					pageSize: pageSize).Build();
+					pageSize: pageSize,
+					streamIdHasher: new StreamIdHasher<SHA256>()).Build();
 		}
 	}
 }

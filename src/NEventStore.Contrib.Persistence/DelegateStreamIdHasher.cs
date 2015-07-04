@@ -2,7 +2,7 @@ namespace NEventStore.Persistence.Sql
 {
     using System;
 
-    public class DelegateStreamIdHasher : IStreamIdHasher
+    public class DelegateStreamIdHasher : IContribStreamIdHasher
     {
         private readonly Func<string, string> _getHash;
 

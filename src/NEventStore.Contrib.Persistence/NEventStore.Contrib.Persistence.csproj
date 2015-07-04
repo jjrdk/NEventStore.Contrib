@@ -46,21 +46,20 @@
     <Compile Include="ConnectionScope.cs" />
     <Compile Include="DelegateStreamIdHasher.cs" />
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="FirebirdPersistenceEngine.cs" />
+    <Compile Include="FirebirdSqlPersistenceEngine.cs" />
     <Compile Include="FirebirdSqlPersistenceFactory.cs" />
     <Compile Include="FirebirdSqlPersistenceWireup.cs" />
     <Compile Include="FirebirdWireupExtension.cs" />
     <Compile Include="IConnectionFactory.cs" />
-    <Compile Include="IDbStatement.cs" />
-    <Compile Include="ISqlDialect.cs" />
-    <Compile Include="IStreamIdHasher.cs" />
+    <Compile Include="IContribDbStatement.cs" />
+    <Compile Include="IContribSqlDialect.cs" />
+    <Compile Include="IContribStreamIdHasher.cs" />
     <Compile Include="Messages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sha1StreamIdHasher.cs" />
     <Compile Include="SnapshotExtensions.cs" />
     <Compile Include="SqlDialects\CommonDbStatement.cs" />
     <Compile Include="SqlDialects\CommonSqlDialect.cs" />
@@ -78,8 +77,8 @@
     </Compile>
     <Compile Include="SqlDialects\NextPageDelegate.cs" />
     <Compile Include="SqlDialects\PagedEnumerationCollection.cs" />
-    <Compile Include="SqlPersistenceEngine.cs" />
     <Compile Include="StreamHeadExtensions.cs" />
+    <Compile Include="StreamIdHasher.cs" />
     <Compile Include="ThreadScope.cs" />
     <Compile Include="UniqueKeyViolationException.cs" />
   </ItemGroup>

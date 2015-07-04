@@ -5,7 +5,7 @@ namespace NEventStore.Persistence.Sql
     using System.Data;
     using NEventStore.Persistence.Sql.SqlDialects;
 
-    public interface IDbStatement : IDisposable
+    public interface IContribDbStatement : IDisposable
     {
         int PageSize { get; set; }
 

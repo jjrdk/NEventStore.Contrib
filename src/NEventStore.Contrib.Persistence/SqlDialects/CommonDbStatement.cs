@@ -7,17 +7,17 @@ namespace NEventStore.Persistence.Sql.SqlDialects
     using NEventStore.Logging;
     using NEventStore.Persistence.Sql;
 
-    public class CommonDbStatement : IDbStatement
+    public class CommonDbStatement : IContribDbStatement
     {
         private const int InfinitePageSize = 0;
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (CommonDbStatement));
         private readonly IDbConnection _connection;
-        private readonly ISqlDialect _dialect;
+        private readonly IContribSqlDialect _dialect;
         private readonly TransactionScope _scope;
         private readonly IDbTransaction _transaction;
 
         public CommonDbStatement(
-            ISqlDialect dialect,
+            IContribSqlDialect dialect,
             TransactionScope scope,
             IDbConnection connection,
             IDbTransaction transaction)
@@ -32,7 +32,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
         protected IDictionary<string, Tuple<object, DbType?>> Parameters { get; private set; }
 
-        protected ISqlDialect Dialect
+        protected IContribSqlDialect Dialect
         {
             get { return _dialect; }
         }

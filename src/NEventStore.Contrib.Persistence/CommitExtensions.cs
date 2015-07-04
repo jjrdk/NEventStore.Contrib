@@ -20,7 +20,7 @@ namespace NEventStore.Persistence.Sql
         private const int PayloadIndex = 9;
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (CommitExtensions));
 
-        public static ICommit GetCommit(this IDataRecord record, ISerialize serializer, ISqlDialect sqlDialect)
+        public static ICommit GetCommit(this IDataRecord record, ISerialize serializer, IContribSqlDialect sqlDialect)
         {
             Logger.Verbose(Messages.DeserializingCommit, serializer.GetType());
             var headers = serializer.Deserialize<Dictionary<string, object>>(record, HeadersIndex);

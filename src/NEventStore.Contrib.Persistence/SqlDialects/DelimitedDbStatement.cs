@@ -12,7 +12,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
         private const string Delimiter = ";";
 
         public DelimitedDbStatement(
-            ISqlDialect dialect,
+            IContribSqlDialect dialect,
             TransactionScope scope,
             IDbConnection connection,
             IDbTransaction transaction)
