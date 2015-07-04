@@ -7,15 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Contrib.Persist
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.FirebirdSql.Tests", "NEventStore.Persistence.FirebirdSql.Tests\NEventStore.Persistence.FirebirdSql.Tests.csproj", "{0429FD21-A8EF-4C73-967B-579A9C50CE2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore", "..\dependencies\NEventStore\src\NEventStore\NEventStore.csproj", "{03946843-F343-419C-88EF-3E446D08DFA6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.AcceptanceTests", "..\dependencies\NEventStore\src\NEventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.csproj", "{3FE594FE-16FF-4405-97D5-5A58FB12520B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D3DC79D4-F147-4EAD-AD6E-89CBB154C5A5}"
 	ProjectSection(SolutionItems) = preProject
 		..\NEventStore.Contrib.Persistence.nuspec = ..\NEventStore.Contrib.Persistence.nuspec
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Contrib.Persistence.AcceptanceTests", "NEventStore.Contrib.Persistence.AcceptanceTests\NEventStore.Contrib.Persistence.AcceptanceTests.csproj", "{3FE594FE-16FF-4405-97D5-5A58FB12520B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +29,6 @@ Global
 		{0429FD21-A8EF-4C73-967B-579A9C50CE2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0429FD21-A8EF-4C73-967B-579A9C50CE2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0429FD21-A8EF-4C73-967B-579A9C50CE2E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{03946843-F343-419C-88EF-3E446D08DFA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{03946843-F343-419C-88EF-3E446D08DFA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{03946843-F343-419C-88EF-3E446D08DFA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{03946843-F343-419C-88EF-3E446D08DFA6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3FE594FE-16FF-4405-97D5-5A58FB12520B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3FE594FE-16FF-4405-97D5-5A58FB12520B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FE594FE-16FF-4405-97D5-5A58FB12520B}.Release|Any CPU.ActiveCfg = Release|Any CPU

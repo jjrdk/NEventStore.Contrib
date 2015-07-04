@@ -1,14 +1,14 @@
 namespace NEventStore.Contrib.Persistence
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Data;
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
 
-	using NEventStore.Logging;
-	using NEventStore.Persistence;
-	using NEventStore.Serialization;
+    using NEventStore.Logging;
+    using NEventStore.Persistence;
+    using NEventStore.Serialization;
 
-	public static class CommitExtensions
+    public static class CommitExtensions
     {
         private const int BucketIdIndex = 0;
         private const int StreamIdIndex = 1;

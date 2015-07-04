@@ -39,9 +39,9 @@
       <HintPath>..\packages\FirebirdSql.Data.FirebirdClient.4.6.4.0\lib\net45\FirebirdSql.Data.FirebirdClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Mono.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Npgsql.2.0.11\lib\Net40\Mono.Security.dll</HintPath>
+    <Reference Include="NEventStore, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NEventStore.5.2.0\lib\net40\NEventStore.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -57,28 +57,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\dependencies\NEventStore\src\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
-      <Link>PersistenceTests.cs</Link>
-    </Compile>
     <Compile Include="..\..\..\NEventStore.Persistence.Sql\dependencies\NEventStore\src\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\NEventStore.Contrib.Persistence.AcceptanceTests\PersistenceTests.cs">
+      <Link>PersistenceTests.cs</Link>
     </Compile>
     <Compile Include="FirebirdInProcessConnectionFactory.cs" />
     <Compile Include="PersistenceEngineFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\dependencies\NEventStore\src\NEventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.csproj">
+    <ProjectReference Include="..\NEventStore.Contrib.Persistence.AcceptanceTests\NEventStore.Contrib.Persistence.AcceptanceTests.csproj">
       <Project>{3fe594fe-16ff-4405-97d5-5a58fb12520b}</Project>
-      <Name>NEventStore.Persistence.AcceptanceTests</Name>
+      <Name>NEventStore.Contrib.Persistence.AcceptanceTests</Name>
     </ProjectReference>
     <ProjectReference Include="..\NEventStore.Contrib.Persistence\NEventStore.Contrib.Persistence.csproj">
       <Project>{F9E7FD69-0818-48CA-9249-5387739E1B6A}</Project>
       <Name>NEventStore.Contrib.Persistence</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dependencies\NEventStore\src\NEventStore\NEventStore.csproj">
-      <Project>{03946843-f343-419c-88ef-3e446d08dfa6}</Project>
-      <Name>NEventStore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
