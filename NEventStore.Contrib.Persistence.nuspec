@@ -3,13 +3,13 @@
   <metadata>
 	<id>NEventStore.Contrib.Persistence</id>
 	<version>1.0.0.0</version>
-	<title>NEventStore.Persistence</title>
+	<title>NEventStore.Contrib.Persistence</title>
 	<authors>Jacob Reimers, Javier Jimenez Roda</authors>
 	<owners>Jacob Reimers, Javier Jimenez Roda</owners>
 	<licenseUrl>https://raw.githubusercontent.com/jjrdk/NEventStore.Contrib/master/license.txt</licenseUrl>
 	<projectUrl>https://github.com/jjrdk/NEventStore.Contrib.Persistence</projectUrl>
 	<requireLicenseAcceptance>false</requireLicenseAcceptance>
-	<description>Custom build of NEventStore with persistence</description>
+	<description>Community package with additional persistence engine for NEventStore.</description>
 	<releaseNotes>Included support for FirebirdSQL database.</releaseNotes>
 	<copyright>Copyright 2015</copyright>
 	<tags>EventStore EventSource FirebirdSQL</tags>
