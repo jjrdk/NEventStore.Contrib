@@ -59,7 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\NEventStore.Persistence.Sql\dependencies\NEventStore\src\VersionAssemblyInfo.cs">
+    <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="..\NEventStore.Contrib.Persistence.AcceptanceTests\PersistenceTests.cs">
