@@ -35,7 +35,7 @@ task Test -depends Compile, Clean {
 }
 
 task Compile -depends UpdatePackages {
-	$msbuild = Resolve-Path "${Env:ProgramFiles(x86)}\MSBuild\14.0\Bin\MSBuild.exe"
+	$msbuild = Resolve-Path "${Env:ProgramFiles(x86)}\MSBuild\12.0\Bin\MSBuild.exe"
 	foreach($fwk in $fwkVersions) {
 		$output = "..\$buildOutput\$fwk\$configuration"
 		$options = "/p:configuration=$configuration;platform=$platform;TargetFrameworkVersion=v$fwk;OutputPath=$output"
@@ -45,7 +45,7 @@ task Compile -depends UpdatePackages {
 }
 
 task UpdatePackages -depends Clean {
-	$packageConfigs = Get-ChildItem -Path .\ -Include "packages.config" -Recurse
+	$packageConfigs = Get-ChildItem -Path ..\ -Include "packages.config" -Recurse
 	foreach($config in $packageConfigs){
 		#Write-Host $config.DirectoryName
 		Exec { ..\src\.nuget\nuget.exe i $config.FullName -o packages -source https://nuget.org/api/v2/ }
