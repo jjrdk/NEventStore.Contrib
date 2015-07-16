@@ -8,7 +8,7 @@ Please see the [documentation](https://github.com/NEventStore/NEventStore/wiki) 
 
 This Contribution package for NEVentStore includes Firebird as supported database.
 
-Next is simple code snippet showing how to use the extension:
+Next is a simple code snippet showing how to use the extension:
 
     IStoreEvents eventStore = Wireup.Init()
                               .LogToOutputWindow()
