@@ -8,7 +8,7 @@
 	using NEventStore.Serialization;
 
 	/// <summary>
-	/// Class FirebirdSqlPersistenceWireup. Allows the usage of the FirebirdSqlPersistenceFactory which sends differente statements in different commands to the database.
+	/// Class FirebirdSqlPersistenceWireup. Allows the usage of the FirebirdSqlPersistenceFactory which sends different statements in different commands to the database.
 	/// This is due to a problem with the .NET Provider.
 	/// </summary>
 	public class FirebirdSqlPersistenceWireup : PersistenceWireup

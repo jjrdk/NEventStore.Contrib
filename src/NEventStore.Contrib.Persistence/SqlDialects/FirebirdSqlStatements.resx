@@ -134,7 +134,6 @@
 	   Payload blob NOT NULL
 	);__
 CREATE GENERATOR gen_cp_CpNo;__
-SET GENERATOR gen_cp_CpNo TO 0;__
 CREATE TRIGGER TCheckPoint FOR Commits
 ACTIVE BEFORE INSERT POSITION 0
 AS
