@@ -25,5 +25,26 @@
 
             return wire;
         }
+
+        /// <summary>
+        /// Usings the firebird connection string.
+        /// </summary>
+        /// <param name="wireup">The wireup.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="providerName">Name of the provider.</param>
+        /// <param name="initialize">if set to <c>true</c> [initialize].</param>
+        /// <returns>The FirebirdSqlPersistenceWireup instance properly configured.</returns>
+        public static FirebirdSqlPersistenceWireup UsingFirebirdConnectionString(this Wireup wireup, string name, string connectionString, string providerName, bool initialize = false)
+        {
+            var connectionFactory = new ConfigurationConnectionFactory(name, providerName, connectionString);
+            var persistence = new FirebirdSqlPersistenceWireup(wireup, connectionFactory);
+            if (initialize)
+            {
+                persistence.InitializeStorageEngine();
+            }
+
+            return persistence;
+        }
     }
 }

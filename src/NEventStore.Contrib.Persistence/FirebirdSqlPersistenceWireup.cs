@@ -13,7 +13,7 @@
 	/// </summary>
 	public class FirebirdSqlPersistenceWireup : PersistenceWireup
 	{
-		private const int DefaultPageSize = 512;
+		private const int DefaultPageSize = 100000;
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(FirebirdSqlPersistenceWireup));
 		private int _pageSize = DefaultPageSize;
 
