@@ -29,6 +29,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <CodeAnalysisRuleSet>..\NEventStore.Contrib.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Debug\NEventStore.Contrib.Persistence.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -38,7 +39,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>bin\Release\NEventStore.Contrib.Persistence.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <CodeAnalysisRuleSet>..\NEventStore.Contrib.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>

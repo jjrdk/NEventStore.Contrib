@@ -1,1 +1,1 @@
-& .\src\packages\psake.4.4.2\tools\psake.ps1 .\build\tasks.ps1
+& .\src\packages\psake.4.5.0\tools\psake.ps1 .\build\tasks.ps1

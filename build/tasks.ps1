@@ -5,7 +5,7 @@ properties {
 	$cleanPackages = $false
 	$oldEnvPath = ""
 	$buildOutput = "..\artifacts"
-	$fwkVersions = "4.5.2"
+	$fwkVersions = "4.5", "4.5.2"
 }
 
 task default -depends CleanUpMsBuildPath
@@ -48,7 +48,7 @@ task UpdatePackages -depends Clean {
 	$packageConfigs = Get-ChildItem -Path ..\ -Include "packages.config" -Recurse
 	foreach($config in $packageConfigs){
 		#Write-Host $config.DirectoryName
-		Exec { ..\src\.nuget\nuget.exe i $config.FullName -o packages -source https://nuget.org/api/v2/ }
+		Exec { ..\src\.nuget\nuget.exe i $config.FullName -o ..\src\packages -source https://nuget.org/api/v2/ }
 	}
 }
 
