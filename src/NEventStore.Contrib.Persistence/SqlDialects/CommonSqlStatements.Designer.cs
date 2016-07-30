@@ -86,12 +86,20 @@ namespace NEventStore.Contrib.Persistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DELETE FROM Snapshots WHERE BucketId =@BucketId AND StreamId = @StreamId;
-        ///DELETE FROM Commits WHERE BucketId = @BucketId AND StreamId = @StreamId;.
+        ///   Looks up a localized string similar to DELETE FROM Commits WHERE BucketId = @BucketId AND StreamId = @StreamId;.
         /// </summary>
         internal static string DeleteStream {
             get {
                 return ResourceManager.GetString("DeleteStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DELETE FROM Snapshots WHERE BucketId =@BucketId AND StreamId = @StreamId;
+        /// </summary>
+        internal static string DeleteStreamSnapshots {
+            get {
+                return ResourceManager.GetString("DeleteStreamSnapshots", resourceCulture);
             }
         }
         

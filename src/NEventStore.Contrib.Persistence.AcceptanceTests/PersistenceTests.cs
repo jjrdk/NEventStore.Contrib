@@ -1181,5 +1181,34 @@ namespace NEventStore.Persistence.AcceptanceTests
             }
         }
     }
+
+    public class when_deleting_a_stream : PersistenceEngineConcern
+    {
+        private ICommit _commit;
+
+        protected override void Context()
+        {
+            _commit = Persistence.CommitSingle(Guid.NewGuid().ToString());
+            Persistence.AddSnapshot(new Snapshot(_commit.BucketId, _commit.StreamId, _commit.StreamRevision, "SnapshotData"));
+        }
+
+        protected override void Because()
+        {
+            Persistence.DeleteStream(_commit.BucketId, _commit.StreamId);
+        }
+
+        [Fact]
+        public void should_not_find_stream()
+        {
+            Persistence.GetFrom(_commit.BucketId, _commit.StreamId, 0, int.MaxValue).Count().ShouldBe(0);
+        }
+
+        [Fact]
+        public void should_not_find_any_snapshot_to_stream()
+        {
+            Persistence.GetSnapshot(_commit.BucketId, _commit.StreamId, _commit.StreamRevision).ShouldBeNull();
+        }
+    }
+    
     // ReSharper restore InconsistentNaming
 }

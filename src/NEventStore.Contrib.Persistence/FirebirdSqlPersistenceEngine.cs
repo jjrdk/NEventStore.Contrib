@@ -12,6 +12,7 @@
 	using NEventStore.Logging;
 	using NEventStore.Persistence;
 	using NEventStore.Serialization;
+	using SqlDialects;
 
 	public class FirebirdSqlPersistenceEngine : IPersistStreams
     {
@@ -284,6 +285,17 @@
         {
             Logger.Warn(Messages.DeletingStream, streamId, bucketId);
             streamId = this._streamIdHasher.GetHash(streamId);
+            var dialect = this._dialect as CommonSqlDialect;
+            if (dialect != null)
+            {
+                this.ExecuteCommand(cmd =>
+                {
+                    cmd.AddParameter(this._dialect.BucketId, bucketId, DbType.AnsiString);
+                    cmd.AddParameter(this._dialect.StreamId, streamId, DbType.AnsiString);
+
+                    return cmd.ExecuteNonQuery(dialect.DeleteStreamSnapshots);
+                });
+            }
             this.ExecuteCommand(cmd =>
                 {
                     cmd.AddParameter(this._dialect.BucketId, bucketId, DbType.AnsiString);
