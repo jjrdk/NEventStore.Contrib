@@ -87,9 +87,6 @@
 
             string[] statements = this._dialect.InitializeStorage.Split(new[] { "__" }, StringSplitOptions.RemoveEmptyEntries);
 
-            StringBuilder builder = null;
-            bool buildingSetTermStatement = false;
-
             foreach (string s in statements)
             {
                 this.ExecuteCommand(statement => statement.ExecuteWithoutExceptions(s.Trim()));
