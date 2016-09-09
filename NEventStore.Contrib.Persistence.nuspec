@@ -2,7 +2,7 @@
 <package>
   <metadata>
 	<id>NEventStore.Contrib.Persistence</id>
-	<version>1.1.0.4</version>
+	<version>1.1.1.0</version>
 	<title>NEventStore.Contrib.Persistence</title>
 	<authors>Jacob Reimers, Javier Jimenez Roda</authors>
 	<owners>Jacob Reimers, Javier Jimenez Roda</owners>
@@ -10,7 +10,7 @@
 	<projectUrl>https://github.com/jjrdk/NEventStore.Contrib.Persistence</projectUrl>
 	<requireLicenseAcceptance>false</requireLicenseAcceptance>
 	<description>Community package with additional persistence engine for NEventStore.</description>
-	<releaseNotes>Included support for FirebirdSQL database.</releaseNotes>
+	<releaseNotes>Handle transactions in async blocks.</releaseNotes>
 	<copyright>Copyright 2016</copyright>
 	<tags>EventStore EventSource FirebirdSQL</tags>
   <dependencies>
@@ -19,7 +19,10 @@
   </metadata>
   <files>
 	<file src="artifacts\4.5\$configuration$\NEventStore.Contrib.Persistence.dll" target="lib\net45\" />
+	<file src="artifacts\4.5\$configuration$\NEventStore.Contrib.Persistence.xml" target="lib\net45\" />
 	<file src="artifacts\4.5.2\$configuration$\NEventStore.Contrib.Persistence.dll" target="lib\net452\" />
+	<file src="artifacts\4.5.2\$configuration$\NEventStore.Contrib.Persistence.xml" target="lib\net452\" />
 	<file src="artifacts\4.6.1\$configuration$\NEventStore.Contrib.Persistence.dll" target="lib\net461\" />
+	<file src="artifacts\4.6.1\$configuration$\NEventStore.Contrib.Persistence.xml" target="lib\net461\" />
   </files>
 </package>
