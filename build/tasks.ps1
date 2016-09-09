@@ -35,7 +35,7 @@ task Test -depends Compile {
 }
 
 task Compile -depends UpdatePackages {
-	$msbuild = Resolve-Path "${Env:ProgramFiles(x86)}\MSBuild\12.0\Bin\MSBuild.exe"
+	$msbuild = Resolve-Path "${Env:ProgramFiles(x86)}\MSBuild\14.0\Bin\MSBuild.exe"
 	foreach($fwk in $fwkVersions) {
 		$output = "..\$buildOutput\$fwk\$configuration"
 		$options = ""
