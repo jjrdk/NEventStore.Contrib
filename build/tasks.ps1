@@ -5,7 +5,7 @@ properties {
 	$cleanPackages = $false
 	$oldEnvPath = ""
 	$buildOutput = "..\artifacts"
-	$fwkVersions = "4.5", "4.5.2"
+	$fwkVersions = "4.5", "4.5.2", "4.6.1"
 }
 
 task default -depends CleanUpMsBuildPath
@@ -23,7 +23,7 @@ task BuildPackages -depends Test {
 #	Exec { .\.nuget\nuget.exe pack  -Properties Configuration=$configuration -OutputDirectory $buildOutput ..\NEventStore.Contrib.Persistence.symbols.nuspec -Symbols }
 }
 
-task Test -depends Compile, Clean {
+task Test -depends Compile {
 	'Running Tests'
 	foreach($fwk in $fwkVersions) {
 		Write-Host "Building v. $fwk"
@@ -38,7 +38,14 @@ task Compile -depends UpdatePackages {
 	$msbuild = Resolve-Path "${Env:ProgramFiles(x86)}\MSBuild\12.0\Bin\MSBuild.exe"
 	foreach($fwk in $fwkVersions) {
 		$output = "..\$buildOutput\$fwk\$configuration"
-		$options = "/p:configuration=$configuration;platform=$platform;TargetFrameworkVersion=v$fwk;OutputPath=$output"
+		$options = ""
+		Write-Host ($fwk -eq "4.5")
+		if($fwk -eq "4.5") {
+			$options = "/p:configuration=$configuration;DefineConstants=NET45;platform=$platform;TargetFrameworkVersion=v$fwk;OutputPath=$output"
+		}
+		else{
+			$options = "/p:configuration=$configuration;platform=$platform;TargetFrameworkVersion=v$fwk;OutputPath=$output"
+		}
 		Exec { & $msbuild ..\src\NEventStore.Contrib.sln $options }
 	}
 	'Executed Compile!'

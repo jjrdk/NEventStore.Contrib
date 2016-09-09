@@ -20,5 +20,6 @@
   <files>
 	<file src="artifacts\4.5\$configuration$\NEventStore.Contrib.Persistence.dll" target="lib\net45\" />
 	<file src="artifacts\4.5.2\$configuration$\NEventStore.Contrib.Persistence.dll" target="lib\net452\" />
+	<file src="artifacts\4.6.1\$configuration$\NEventStore.Contrib.Persistence.dll" target="lib\net461\" />
   </files>
 </package>
