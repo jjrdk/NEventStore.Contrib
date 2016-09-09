@@ -1,20 +1,20 @@
 ﻿namespace NEventStore.Contrib.Persistence
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Data;
-	using System.Globalization;
-	using System.Linq;
-	using System.Text;
-	using System.Threading;
-	using System.Transactions;
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Globalization;
+    using System.Linq;
+    using System.Text;
+    using System.Threading;
+    using System.Transactions;
 
-	using NEventStore.Logging;
-	using NEventStore.Persistence;
-	using NEventStore.Serialization;
+    using NEventStore.Logging;
+    using NEventStore.Persistence;
+    using NEventStore.Serialization;
 	using SqlDialects;
 
-	public class FirebirdSqlPersistenceEngine : IPersistStreams
+    public class FirebirdSqlPersistenceEngine : IPersistStreams
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof(FirebirdSqlPersistenceEngine));
         private static readonly DateTime EpochTime = new DateTime(1970, 1, 1);
@@ -442,7 +442,11 @@
 
         protected virtual TransactionScope OpenQueryScope()
         {
+#if NET45
             return this.OpenCommandScope() ?? new TransactionScope(TransactionScopeOption.Suppress);
+#else
+            return this.OpenCommandScope() ?? new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled);
+#endif
         }
 
         private void ThrowWhenDisposed()
@@ -509,7 +513,11 @@
 
         protected virtual TransactionScope OpenCommandScope()
         {
+#if NET45
             return new TransactionScope(this._scopeOption);
+#else
+            return new TransactionScope(this._scopeOption, TransactionScopeAsyncFlowOption.Enabled);
+#endif
         }
 
         private static bool RecoverableException(Exception e)

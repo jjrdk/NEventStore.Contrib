@@ -13,8 +13,6 @@ namespace NEventStore.Persistence.AcceptanceTests
     using Xunit;
     using Xunit.Should;
 
-    using ExtensionMethods = NEventStore.ExtensionMethods;
-
 	public class when_a_commit_header_has_a_name_that_contains_a_period : PersistenceEngineConcern
     {
         private ICommit _persisted;
@@ -29,7 +27,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 1,
                 DateTime.Now,
                 new Dictionary<string, object> { { "key.1", "value" } },
-				new List<EventMessage> { new EventMessage { Body = new NEventStore.Contrib.Persistence.AcceptanceTests.ExtensionMethods.SomeDomainEvent { SomeProperty = "Test" } } });
+				new List<EventMessage> { new EventMessage { Body = new ExtensionMethods.SomeDomainEvent { SomeProperty = "Test" } } });
             Persistence.Commit(attempt);
         }
 
@@ -221,7 +219,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
-    // This test ensure the uniqueness of BucketId+StreamId+CommitSequence 
+    // This test ensure the uniqueness of BucketId+StreamId+CommitSequence
     // to avoid concurrency issues
     public class when_committing_a_stream_with_the_same_sequence : PersistenceEngineConcern
     {
@@ -637,12 +635,12 @@ namespace NEventStore.Persistence.AcceptanceTests
         public void should_load_only_the_commits_on_bucket1_starting_from_the_checkpoint()
         {
             _committedOnBucket1.Skip(checkPoint).All(x => _loaded.Contains(x)).ShouldBeTrue(); // all commits should be found in loaded collection
-        } 
-        
+        }
+
         [Fact]
         public void should_not_load_the_commits_from_bucket2()
         {
-            _committedOnBucket2.All(x => !_loaded.Contains(x)).ShouldBeTrue(); 
+            _committedOnBucket2.All(x => !_loaded.Contains(x)).ShouldBeTrue();
         }
     }
 
